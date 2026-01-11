@@ -124,6 +124,10 @@ A: 某些特殊情况下发票内容可能会出现缺失，可尝试将PDF转�
 - [pdf-lib](https://pdf-lib.js.org/) - 强大的PDF生成库
 - [SheetJS](https://sheetjs.com/) - Excel处理库
 
+## 开发者
+仓库地址：[https://github.com/a937750307/FaPiaoHeBing](https://github.com/a937750307/FaPiaoHeBing)
+
+
 
 **免责声明**: 本工具仅供学习和交流使用，禁止商业用途。使用本工具产生的任何问题，开发者不承担责任。用户需自行承担使用本工具的一切后果。
 
@@ -131,4 +135,5 @@ A: 某些特殊情况下发票内容可能会出现缺失，可尝试将PDF转�
 ---
 
 Made with ❤️ by 忆痕
+
 
