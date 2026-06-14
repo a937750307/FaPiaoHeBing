@@ -4,48 +4,68 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>电子发票合并打印工具</title>
-    <meta name="description" content="专业的电子发票处理解决方案，支持批量合并、自动统计、一键打印。让报销更简单，让财务更轻松。免费在线使用。">
-    <meta name="author" content="忆痕（yckj666@52PJ）">
-    <meta name="robots" content="index, follow">
+    <meta name="description" content="电子发票处理工具，支持批量合并、页面分割、一键打印。">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+        :root {
+            --primary: #4a90e2;
+            --primary-dark: #357abd;
+            --primary-light: #e8f0ff;
+            --success: #27ae60;
+            --success-light: #e8f5e9;
+            --warning: #f39c12;
+            --warning-light: #fff8e1;
+            --danger: #e74c3c;
+            --danger-light: #fde8e8;
+            --text: #333;
+            --text-secondary: #666;
+            --text-muted: #999;
+            --bg: #f5f7fa;
+            --white: #fff;
+            --border: #e8ecf1;
+            --shadow: 0 2px 12px rgba(0,0,0,0.06);
+            --shadow-hover: 0 6px 24px rgba(74,144,226,0.12);
+            --radius: 12px;
+            --radius-sm: 8px;
+            --transition: 0.25s ease;
         }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
-            background: #f5f7fa;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
             min-height: 100vh;
-            color: #333;
         }
 
-        /* 导航栏样式 */
-        nav {
-            background: white;
-            border-bottom: 1px solid #e8ecf1;
-            padding: 0;
+        /* ===== 导航栏 ===== */
+        .navbar {
+            background: rgba(255,255,255,0.92);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border);
             position: sticky;
             top: 0;
-            z-index: 999;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            z-index: 100;
+            transition: var(--transition);
         }
+        .navbar.scrolled { box-shadow: 0 2px 16px rgba(0,0,0,0.08); }
 
-        .nav-container {
+        .nav-inner {
             max-width: 1200px;
             margin: 0 auto;
-            padding: 0 20px;
+            padding: 0 24px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            height: 70px;
+            height: 64px;
         }
 
-        .nav-logo {
-            font-size: 1.5em;
+        .nav-brand {
+            font-size: 1.25em;
             font-weight: 700;
-            color: #4a90e2;
+            color: var(--primary);
             text-decoration: none;
             display: flex;
             align-items: center;
@@ -54,1567 +74,1220 @@
 
         .nav-links {
             display: flex;
-            gap: 30px;
+            gap: 28px;
             list-style: none;
+            align-items: center;
         }
 
         .nav-links a {
-            color: #333;
+            color: var(--text-secondary);
             text-decoration: none;
-            font-size: 0.95em;
-            transition: color 0.3s;
-            padding: 5px 0;
+            font-size: 0.93em;
+            padding: 6px 0;
             border-bottom: 2px solid transparent;
+            transition: var(--transition);
+            position: relative;
         }
 
         .nav-links a:hover,
         .nav-links a.active {
-            color: #4a90e2;
-            border-bottom-color: #4a90e2;
+            color: var(--primary);
+            border-bottom-color: var(--primary);
         }
 
+        /* ===== 容器 ===== */
         .container {
             max-width: 1200px;
             margin: 0 auto;
-            padding: 40px 20px;
+            padding: 0 24px;
         }
 
-        /* 页面标题区 */
-        .page-header {
+        /* ===== Hero ===== */
+        .hero {
             text-align: center;
-            margin-bottom: 50px;
+            padding: 60px 20px 40px;
         }
 
-        .page-header h1 {
-            font-size: 2.5em;
-            color: #333;
-            margin-bottom: 15px;
-        }
-
-        .page-header p {
-            font-size: 1.1em;
-            color: #666;
-            margin-bottom: 10px;
-        }
-
-        header {
-            text-align: center;
-            color: white;
-            padding: 40px 20px;
-            background: white;
-        }
-
-        .header-links {
-            text-align: right;
-            margin-bottom: 20px;
-        }
-
-        .header-links a {
-            color: #4a90e2;
-            text-decoration: none;
-            margin-left: 20px;
-            font-size: 1em;
-            transition: opacity 0.3s;
-        }
-
-        .header-links a:hover {
-            opacity: 0.8;
-            text-decoration: underline;
-        }
-
-        header h1 {
-            font-size: 2.5em;
-            margin-bottom: 10px;
-            text-shadow: none;
-            color: #333;
-        }
-
-        header p {
-            font-size: 1.1em;
-            opacity: 1;
-            color: #666;
-        }
-
-        .main-card {
-            background: white;
-            border-radius: 20px;
-            padding: 40px;
-            box-shadow: 0 4px 16px rgba(0,0,0,0.08);
-            margin-top: 20px;
-        }
-
-        .feature-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 24px;
-            margin: 30px 0;
-        }
-
-        .feature-card {
-            background: white;
-            padding: 20px;
-            border-radius: 12px;
-            text-align: center;
-            transition: all 0.3s;
-            border: 1px solid #e8ecf1;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
-        }
-
-        .feature-card:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 8px 24px rgba(74, 144, 226, 0.15);
-            border-color: #4a90e2;
-        }
-
-        .feature-icon {
-            font-size: 3.5em;
+        .hero h1 {
+            font-size: 2.4em;
+            color: var(--text);
             margin-bottom: 12px;
+            font-weight: 700;
         }
 
-        .feature-card h3 {
-            color: #333;
-            margin-bottom: 8px;
-            font-size: 1.2em;
-        }
-
-        .feature-card p {
-            color: #666;
-            line-height: 1.6;
-            font-size: 0.95em;
-        }
-
-        .upload-area {
-            border: 2px dashed #4a90e2;
-            border-radius: 12px;
-            padding: 60px 20px;
-            text-align: center;
-            background: #f8fafb;
-            cursor: pointer;
-            transition: all 0.3s;
-            margin: 30px 0;
-        }
-
-        .upload-area:hover {
-            background: #f0f4ff;
-            border-color: #4a90e2;
-        }
-
-        .upload-area.dragover {
-            background: #e8f0ff;
-            border-color: #4a90e2;
-            transform: scale(1.02);
-        }
-
-        .upload-icon {
-            font-size: 3.5em;
-            color: #4a90e2;
-            margin-bottom: 15px;
-        }
-
-        .upload-area h3 {
-            color: #333;
+        .hero p {
+            font-size: 1.1em;
+            color: var(--text-secondary);
             margin-bottom: 8px;
         }
 
-        .upload-area p {
-            color: #666;
-        }
-
-        .btn {
-            background: linear-gradient(135deg, #4a90e2 0%, #357abd 100%);
-            color: white;
-            border: none;
-            padding: 15px 40px;
-            font-size: 1em;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.3s;
-            margin: 10px;
-        }
-
-        .btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(74, 144, 226, 0.3);
-        }
-
-        .btn:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-
-        .file-list {
-            margin: 30px 0;
-        }
-
-        .file-item {
-            background: white;
-            padding: 15px 20px;
-            border-radius: 8px;
-            margin-bottom: 10px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border: 1px solid #e8ecf1;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.04);
-        }
-
-        .file-info {
-            flex: 1;
-        }
-
-        .file-name {
-            font-weight: 600;
-            color: #333;
-            margin-bottom: 5px;
-        }
-
-        .file-size {
-            font-size: 0.9em;
-            color: #999;
-        }
-
-        .delete-btn {
-            background: #f5f7fa;
-            color: #e74c3c;
-            border: 1px solid #e8ecf1;
-            padding: 8px 16px;
-            border-radius: 6px;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-
-        .delete-btn:hover {
-            background: #e74c3c;
-            color: white;
-        }
-
-        .stats-panel {
-            background: linear-gradient(135deg, #4a90e2 0%, #357abd 100%);
-            color: white;
-            padding: 30px;
-            border-radius: 12px;
-            margin: 30px 0;
-            box-shadow: 0 6px 20px rgba(74, 144, 226, 0.2);
-        }
-
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 20px;
-            margin-top: 20px;
-        }
-
-        .stat-item {
-            text-align: center;
-        }
-
-        .stat-value {
-            font-size: 2.5em;
-            font-weight: bold;
-            margin-bottom: 5px;
-        }
-
-        .stat-label {
-            font-size: 1em;
-            opacity: 0.9;
-        }
-
-        .action-buttons {
-            text-align: center;
-            margin: 30px 0;
-        }
-
-        input[type="file"] {
-            display: none;
+        /* ===== 功能区 ===== */
+        .section {
+            margin-bottom: 48px;
         }
 
         .section-title {
-            font-size: 1.6em;
-            color: #333;
-            margin: 30px 0 20px 0;
-            padding-bottom: 12px;
-            border-bottom: 3px solid #4a90e2;
-        }
-
-        .section-title i {
-            margin-right: 10px;
-            color: #4a90e2;
-        }
-
-        .empty-state {
-            text-align: center;
-            padding: 40px;
-            color: #999;
-        }
-
-        .empty-icon {
-            font-size: 4em;
+            font-size: 1.5em;
+            color: var(--text);
             margin-bottom: 20px;
+            padding-bottom: 12px;
+            border-bottom: 3px solid var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
 
-        .preview-area {
-            margin: 30px 0;
-            padding: 20px;
-            background: white;
-            border-radius: 10px;
-            max-height: 500px;
-            overflow-y: auto;
-            border: 1px solid #e8ecf1;
-        }
-
-        .invoice-preview {
-            background: #f8fafb;
-            padding: 20px;
-            margin-bottom: 15px;
-            border-radius: 8px;
-            border: 1px solid #e8ecf1;
-        }
-
-        .invoice-preview h4 {
-            color: #333;
-            margin-bottom: 10px;
-        }
-
-        .invoice-preview p {
-            color: #666;
-            margin-bottom: 5px;
-            font-size: 0.95em;
-        }
-
-        .toast {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background: #27ae60;
-            color: white;
-            padding: 15px 25px;
-            border-radius: 8px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-            z-index: 1000;
-            animation: slideIn 0.3s ease;
-        }
-
-        .toast.error {
-            background: #e74c3c;
-        }
-
-        @keyframes slideIn {
-            from {
-                transform: translateX(400px);
-                opacity: 0;
-            }
-            to {
-                transform: translateX(0);
-                opacity: 1;
-            }
-        }
-
-        .footer {
-            background: transparent;
-            color: #333;
-            padding: 30px 20px;
-            margin-top: 20px;
-        }
-
-        .footer-container {
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-
-        .footer-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 30px;
-            margin-bottom: 30px;
-        }
-
-        .footer-section h4 {
-            color: white;
-            margin-bottom: 15px;
-            font-size: 1.1em;
-        }
-
-        .footer-section ul {
-            list-style: none;
-        }
-
-        .footer-section a {
-            color: #333;
-            text-decoration: none;
+        .section-desc {
+            color: var(--text-secondary);
+            margin-bottom: 24px;
             line-height: 1.8;
-            font-size: 0.95em;
-            transition: color 0.3s;
         }
 
-        .footer-section a:hover {
-            color: #4a90e2;
+        /* ===== 卡片 ===== */
+        .card {
+            background: var(--white);
+            border-radius: var(--radius);
+            padding: 28px;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border);
         }
 
-        .footer-bottom {
-            border-top: 1px solid #e8ecf1;
-            padding-top: 15px;
-            text-align: center;
-            color: #666;
-            font-size: 0.9em;
-        }
-
-        .tips-box {
-            background: #fff8e1;
-            border-left: 4px solid #ffc107;
-            padding: 20px;
-            margin: 20px 0;
-            border-radius: 8px;
-        }
-
-        .tips-box h4 {
-            color: #f39c12;
-            margin-bottom: 10px;
-        }
-
-        .tips-box p {
-            color: #8b6f47;
-            line-height: 1.6;
-        }
-
-        .info-grid {
+        /* ===== 功能特色网格 ===== */
+        .feature-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
             gap: 20px;
-            margin: 20px 0;
+            margin-bottom: 32px;
         }
 
-        .info-card {
-            background: white;
+        .feature-card {
+            background: var(--white);
+            padding: 24px 20px;
+            border-radius: var(--radius);
+            text-align: center;
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+        }
+
+        .feature-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-hover);
+            border-color: var(--primary);
+        }
+
+        .feature-card h3 {
+            font-size: 1.05em;
+            color: var(--text);
+            margin-bottom: 6px;
+        }
+
+        .feature-card p {
+            font-size: 0.88em;
+            color: var(--text-secondary);
+            line-height: 1.5;
+        }
+
+        /* ===== 上传区域 ===== */
+        .upload-area {
+            border: 2px dashed var(--primary);
+            border-radius: var(--radius);
+            padding: 48px 24px;
+            text-align: center;
+            background: #f8fafc;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .upload-area:hover {
+            background: var(--primary-light);
+            border-color: var(--primary-dark);
+        }
+
+        .upload-area.dragover {
+            background: var(--primary-light);
+            border-color: var(--primary-dark);
+            transform: scale(1.01);
+        }
+
+        .upload-area h3 { color: var(--text); margin-bottom: 6px; font-size: 1.1em; }
+        .upload-area p { color: var(--text-secondary); font-size: 0.9em; }
+
+        /* ===== 文件列表 ===== */
+        .file-list { margin-top: 20px; }
+        .file-item {
+            background: var(--white);
+            padding: 14px 18px;
+            border-radius: var(--radius-sm);
+            margin-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: 1px solid var(--border);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.03);
+            transition: var(--transition);
+        }
+        .file-item:hover { border-color: var(--primary); }
+        .file-info { flex: 1; min-width: 0; }
+        .file-name { font-weight: 600; color: var(--text); font-size: 0.93em; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .file-meta { font-size: 0.82em; color: var(--text-muted); display: flex; gap: 12px; margin-top: 2px; }
+        .file-actions { display: flex; gap: 8px; flex-shrink: 0; }
+
+        /* ===== 按钮 ===== */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            padding: 12px 28px;
+            font-size: 0.93em;
+            border-radius: var(--radius-sm);
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            transition: var(--transition);
+            white-space: nowrap;
+            text-decoration: none;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: var(--white);
+        }
+        .btn-primary:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 16px rgba(74,144,226,0.3);
+        }
+        .btn-primary:disabled {
+            opacity: 0.45;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .btn-outline {
+            background: var(--white);
+            color: var(--primary);
+            border: 1.5px solid var(--primary);
+        }
+        .btn-outline:hover {
+            background: var(--primary-light);
+        }
+        .btn-outline:disabled {
+            opacity: 0.45;
+            cursor: not-allowed;
+        }
+
+        .btn-danger {
+            background: var(--white);
+            color: var(--danger);
+            border: 1px solid var(--border);
+        }
+        .btn-danger:hover {
+            background: var(--danger);
+            color: var(--white);
+            border-color: var(--danger);
+        }
+
+        .btn-sm { padding: 6px 14px; font-size: 0.82em; }
+
+        .btn-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+            margin-top: 24px;
+        }
+
+        /* ===== PDF 预览 (iframe) ===== */
+        .pdf-preview-container {
+            margin-top: 28px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            overflow: hidden;
+            background: #e0e0e0;
+            box-shadow: var(--shadow);
+        }
+
+        .pdf-preview-header {
+            background: var(--white);
+            padding: 14px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .pdf-preview-header h4 {
+            font-size: 0.95em;
+            color: var(--text);
+        }
+
+        .pdf-preview-header .page-info {
+            font-size: 0.85em;
+            color: var(--text-muted);
+        }
+
+        .pdf-preview-frame {
+            width: 100%;
+            height: 600px;
+            border: none;
+            background: var(--white);
+        }
+
+        /* ===== 分割比例 ===== */
+        .ratio-control {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 16px;
+            padding: 20px 24px;
+            background: #f8fafc;
+            border-radius: var(--radius);
+            border: 1px solid var(--border);
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        .ratio-control label {
+            font-weight: 600;
+            color: var(--text);
+            white-space: nowrap;
+            font-size: 0.93em;
+        }
+
+        .ratio-control input[type="range"] {
+            flex: 1;
+            min-width: 200px;
+            max-width: 400px;
+            accent-color: var(--primary);
+        }
+
+        .ratio-value {
+            font-weight: 700;
+            color: var(--primary);
+            font-size: 1.1em;
+            min-width: 42px;
+            text-align: center;
+        }
+
+        /* ===== 裁剪说明 ===== */
+        .crop-legend {
+            background: var(--white);
+            padding: 14px 18px;
+            border-radius: var(--radius-sm);
+            margin-top: 16px;
+            border: 1px solid var(--border);
+            font-size: 0.88em;
+        }
+        .crop-legend p { margin-bottom: 4px; }
+        .crop-legend .keep { color: var(--success); font-weight: 600; }
+        .crop-legend .remove { color: var(--danger); text-decoration: line-through; }
+
+        /* ===== 分割预览画布 ===== */
+        .split-preview-card {
+            background: var(--white);
             padding: 20px;
-            border-radius: 10px;
-            border: 1px solid #e8ecf1;
+            border-radius: var(--radius);
+            border: 1px solid var(--border);
+            text-align: center;
+            box-shadow: var(--shadow);
+        }
+
+        .split-preview-card h4 {
+            color: var(--text);
+            margin-bottom: 12px;
+            font-size: 0.93em;
+        }
+
+        .split-preview-card canvas {
+            max-width: 100%;
+            border: 1px solid #eee;
+            border-radius: 4px;
             box-shadow: 0 2px 8px rgba(0,0,0,0.06);
         }
 
-        .info-card h4 {
-            color: #4a90e2;
-            margin-bottom: 15px;
+        /* ===== Toast ===== */
+        .toast {
+            position: fixed;
+            top: 80px;
+            right: 24px;
+            background: var(--success);
+            color: var(--white);
+            padding: 14px 24px;
+            border-radius: var(--radius-sm);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+            z-index: 1000;
+            animation: slideIn 0.3s ease;
+            font-size: 0.9em;
+            max-width: 360px;
+        }
+        .toast.error { background: var(--danger); }
+
+        @keyframes slideIn {
+            from { transform: translateX(400px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
         }
 
-        .info-card ul {
-            list-style: none;
-            padding-left: 0;
+        /* ===== 提示框 ===== */
+        .tips-box {
+            background: var(--warning-light);
+            border-left: 4px solid var(--warning);
+            padding: 18px 20px;
+            border-radius: var(--radius-sm);
+            margin-bottom: 24px;
+            font-size: 0.9em;
+            line-height: 1.7;
+        }
+        .tips-box h4 { color: var(--warning); margin-bottom: 8px; }
+        .tips-box p { color: #8b6f47; }
+        .tips-box a { color: var(--primary); }
+
+        .tips-box.success {
+            background: var(--success-light);
+            border-left-color: var(--success);
+        }
+        .tips-box.success h4 { color: var(--success); }
+        .tips-box.success p { color: #2e7d32; }
+
+        /* ===== 空状态 ===== */
+        .empty-state {
+            text-align: center;
+            padding: 32px;
+            color: var(--text-muted);
         }
 
-        .info-card li {
-            padding: 8px 0;
-            border-bottom: 1px solid #f0f0f0;
-            color: #666;
+        /* ===== 页脚 ===== */
+        .footer {
+            text-align: center;
+            padding: 28px 20px;
+            border-top: 1px solid var(--border);
+            margin-top: 40px;
+            font-size: 0.88em;
+            color: var(--text-secondary);
+            line-height: 1.8;
         }
+        .footer a { color: var(--text-secondary); text-decoration: none; margin: 0 8px; }
+        .footer a:hover { color: var(--primary); }
 
-        .info-card li:last-child {
-            border-bottom: none;
-        }
+        /* ===== 隐藏 ===== */
+        .hidden { display: none !important; }
 
-        /* 响应式设计 */
+        /* ===== 响应式 ===== */
         @media (max-width: 768px) {
-            .nav-links {
-                display: none;
-            }
-
-            header h1 {
-                font-size: 1.8em;
-                margin-bottom: 8px;
-            }
-
-            header p {
-                font-size: 1em;
-            }
-
-            .main-card {
-                padding: 20px;
-                border-radius: 15px;
-            }
-
-            .feature-grid {
-                grid-template-columns: repeat(2, 1fr);
-                gap: 15px;
-            }
-
-            .feature-card {
-                padding: 20px;
-            }
-
-            .feature-icon {
-                font-size: 2.5em;
-                margin-bottom: 10px;
-            }
-
-            .feature-card h3 {
-                font-size: 1.1em;
-                margin-bottom: 8px;
-            }
-
-            .feature-card p {
-                font-size: 0.9em;
-            }
-
-            .stats-grid {
-                grid-template-columns: 1fr;
-                gap: 15px;
-            }
-
-            .stat-value {
-                font-size: 2em;
-            }
-
-            .stat-label {
-                font-size: 0.9em;
-            }
-
-            .stats-panel {
-                padding: 20px;
-                margin: 20px 0;
-            }
-
-            .stats-panel h3 {
-                font-size: 1.3em;
-                margin-bottom: 15px;
-            }
-
-            .info-grid {
-                grid-template-columns: 1fr;
-                gap: 15px;
-            }
-
-            .info-card {
-                padding: 15px;
-            }
-
-            .info-card h4 {
-                font-size: 1em;
-                margin-bottom: 10px;
-            }
-
-            .info-card ul {
-                padding-left: 0;
-            }
-
-            .info-card li {
-                font-size: 0.9em;
-                padding: 6px 0;
-            }
-
-            .section-title {
-                font-size: 1.4em;
-                margin: 20px 0 15px 0;
-            }
-
-            .upload-area {
-                padding: 40px 15px;
-                margin: 20px 0;
-                border-radius: 12px;
-            }
-
-            .upload-icon {
-                font-size: 3em;
-                margin-bottom: 10px;
-            }
-
-            .upload-area h3 {
-                font-size: 1.1em;
-                margin-bottom: 8px;
-            }
-
-            .upload-area p {
-                font-size: 0.85em;
-            }
-
-            .btn {
-                display: block;
-                width: 100%;
-                padding: 16px 20px;
-                font-size: 1em;
-                margin: 8px 0;
-                border-radius: 8px;
-                min-height: 48px;
-                line-height: 1.5;
-            }
-
-            .action-buttons {
-                display: flex;
-                flex-direction: column;
-                gap: 10px;
-                margin: 20px 0;
-            }
-
-            .action-buttons .btn {
-                margin: 0;
-            }
-
-            .file-item {
-                padding: 12px 15px;
-                margin-bottom: 8px;
-                flex-direction: column;
-                align-items: flex-start;
-            }
-
-            .file-info {
-                margin-bottom: 10px;
-                width: 100%;
-            }
-
-            .file-name {
-                font-size: 0.95em;
-                margin-bottom: 5px;
-            }
-
-            .file-size {
-                font-size: 0.8em;
-            }
-
-            .delete-btn {
-                width: 100%;
-                padding: 10px 15px;
-                font-size: 0.9em;
-            }
-
-            .tips-box {
-                padding: 15px;
-                margin: 15px 0;
-                border-radius: 8px;
-            }
-
-            .tips-box h4 {
-                font-size: 1em;
-                margin-bottom: 8px;
-            }
-
-            .tips-box p {
-                font-size: 0.85em;
-                line-height: 1.5;
-                margin-bottom: 8px;
-            }
-
-            .tips-box p:last-child {
-                margin-bottom: 0;
-            }
-
-            .preview-area {
-                max-height: 400px;
-                padding: 15px;
-                margin: 20px 0;
-            }
-
-            .invoice-preview {
-                padding: 15px;
-                margin-bottom: 12px;
-                border-radius: 8px;
-            }
-
-            .invoice-preview h4 {
-                font-size: 1em;
-                margin-bottom: 8px;
-            }
-
-            .invoice-preview p {
-                font-size: 0.85em;
-                margin-bottom: 5px;
-            }
-
-            .empty-icon {
-                font-size: 3em;
-                margin-bottom: 15px;
-            }
-
-            .empty-state {
-                padding: 30px 15px;
-            }
-
-            .empty-state p {
-                font-size: 0.95em;
-            }
-
-            .footer {
-                padding: 30px 15px;
-                font-size: 0.9em;
-            }
-
-            .footer p {
-                font-size: 0.85em;
-                margin-bottom: 10px;
-            }
-
-            .footer a {
-                font-size: 0.8em;
-                margin: 0 4px;
-            }
+            .nav-links { gap: 16px; }
+            .nav-links a { font-size: 0.82em; }
+            .hero { padding: 40px 16px 24px; }
+            .hero h1 { font-size: 1.6em; }
+            .hero p { font-size: 0.95em; }
+            .card { padding: 20px; }
+            .feature-grid { grid-template-columns: 1fr 1fr; gap: 12px; }
+            .btn-group { flex-direction: column; }
+            .btn-group .btn { width: 100%; }
+            .btn { padding: 14px 20px; font-size: 0.9em; }
+            .ratio-control { flex-direction: column; gap: 10px; }
+            .ratio-control input[type="range"] { max-width: 100%; }
+            .pdf-preview-frame { height: 380px; }
+            .file-item { flex-direction: column; align-items: flex-start; gap: 8px; }
+            .file-actions { width: 100%; justify-content: flex-end; }
         }
 
         @media (max-width: 480px) {
-            body {
-                background: #f5f7fa;
-            }
-
-            .container {
-                padding: 10px;
-            }
-
-            header {
-                padding: 20px 10px;
-            }
-
-            header h1 {
-                font-size: 1.3em;
-                margin-bottom: 5px;
-            }
-
-            header p {
-                font-size: 0.9em;
-            }
-
-            .main-card {
-                padding: 15px;
-                border-radius: 12px;
-                margin-top: 15px;
-            }
-
-            .section-title {
-                font-size: 1.2em;
-                margin: 15px 0 12px 0;
-                padding-bottom: 8px;
-            }
-
-            .feature-card {
-                padding: 15px;
-                border-radius: 12px;
-            }
-
-            .feature-icon {
-                font-size: 2.2em;
-                margin-bottom: 8px;
-            }
-
-            .feature-card h3 {
-                font-size: 1em;
-                margin-bottom: 6px;
-            }
-
-            .feature-card p {
-                font-size: 0.85em;
-            }
-
-            .upload-area {
-                padding: 30px 10px;
-                margin: 15px 0;
-            }
-
-            .upload-icon {
-                font-size: 2.5em;
-            }
-
-            .upload-area h3 {
-                font-size: 1em;
-            }
-
-            .btn {
-                padding: 14px 16px;
-                font-size: 0.95em;
-                min-height: 44px;
-            }
-
-            .stats-panel {
-                padding: 15px;
-            }
-
-            .stat-value {
-                font-size: 1.8em;
-            }
-
-            .tips-box {
-                padding: 12px;
-                margin: 12px 0;
-            }
-
-            .tips-box h4 {
-                font-size: 0.95em;
-            }
-
-            .tips-box p {
-                font-size: 0.8em;
-            }
-
-            .file-item {
-                padding: 10px 12px;
-            }
-
-            .delete-btn {
-                padding: 8px 12px;
-                font-size: 0.85em;
-            }
-
-            .preview-area {
-                max-height: 300px;
-                padding: 10px;
-            }
-
-            .invoice-preview {
-                padding: 12px;
-            }
-
-            .footer {
-                padding: 20px 10px;
-                font-size: 0.85em;
-            }
-
-            .footer-grid {
-                grid-template-columns: 1fr;
-                gap: 20px;
-            }
-        }
-
-        @media (min-width: 768px) and (max-width: 1024px) {
-            .container {
-                max-width: 100%;
-                padding: 15px;
-            }
-
-            header h1 {
-                font-size: 2.2em;
-            }
-
-            .main-card {
-                padding: 30px;
-            }
-
-            .feature-grid {
-                grid-template-columns: repeat(2, 1fr);
-                gap: 15px;
-            }
-
-            .stats-grid {
-                grid-template-columns: 1fr 1fr;
-            }
+            .nav-inner { height: 56px; }
+            .nav-links { gap: 10px; }
+            .nav-links a { font-size: 0.76em; }
+            .hero h1 { font-size: 1.35em; }
+            .feature-grid { grid-template-columns: 1fr; }
+            .upload-area { padding: 32px 16px; }
         }
     </style>
 </head>
 <body>
-    <!-- 导航栏 -->
-    <nav>
-        <div class="nav-container">
-            <a href="#" class="nav-logo">电子发票合并打印工具</a>
+    <!-- ===== 导航栏 ===== -->
+    <nav class="navbar" id="navbar">
+        <div class="nav-inner">
+            <a href="#" class="nav-brand">电子发票合并打印工具</a>
             <ul class="nav-links">
-                <li><a href="#" class="active">首页</a></li>
-                <li><a href="#features">功能特色</a></li>
-                <li><a href="#tutorial">使用说明</a></li>
-                <li><a href="https://github.com/a937750307/FaPiaoHeBing" target="_blank">GitHub</a></li>
-                <li><a href="http://www.937788.xyz" target="_blank">作者发布页</a></li>
+                <li><a href="README.html">使用说明</a></li>
+                <li><a href="#merge">PDF 合并</a></li>
+                <li><a href="#split">PDF分割</a></li>
             </ul>
         </div>
     </nav>
 
+    <!-- ===== Hero ===== -->
     <div class="container">
-        <header>
+        <div class="hero">
             <h1>电子发票合并打印工具</h1>
-            <p>让报销更简单，让财务更轻松</p>
-            <p style="margin-top: 10px; font-size: 0.95em; color: #999;">开发者：忆痕（yckj666@52PJ）| <a href="https://github.com/a937750307/FaPiaoHeBing" target="_blank" style="color: #4a90e2;">GitHub项目</a></p>
-        </header>
+            <p>批量合并 PDF 文件，A4 双联打印；按比例分割页面，去除无用区域</p>
+            <p style="margin-top:8px;">
+                <a href="https://www.937788.xyz/" target="_blank" style="display:inline-block;padding:6px 20px;background:linear-gradient(135deg, #4a90e2, #357abd);color:#fff;border-radius:20px;font-size:0.85em;text-decoration:none;box-shadow:0 2px 8px rgba(74,144,226,0.3);transition:box-shadow 0.2s,transform 0.2s;" onmouseover="this.style.boxShadow='0 4px 14px rgba(74,144,226,0.45)';this.style.transform='translateY(-1px)';" onmouseout="this.style.boxShadow='0 2px 8px rgba(74,144,226,0.3)';this.style.transform='translateY(0)';">更多工具尽在忆痕发布页</a>
+            </p>
+        </div>
 
-        <div class="main-card">
-            <h2 class="section-title" id="features">产品特色</h2>
+        <!-- ===== 功能特色 ===== -->
+        <div class="section" id="features">
+            <h2 class="section-title">产品特色</h2>
             <div class="feature-grid">
                 <div class="feature-card">
                     <h3>批量合并</h3>
-                    <p>批量合并多个PDF发票文件，省时省力</p>
+                    <p>批量合并多个PDF文件，A4双联打印节省50%纸张</p>
                 </div>
                 <div class="feature-card">
-                    <h3>智能识别</h3>
-                    <p>自动识别发票号、金额、日期等关键信息</p>
+                    <h3>页面分割</h3>
+                    <p>按比例裁切PDF页面，去掉底部无用的页码区域</p>
                 </div>
                 <div class="feature-card">
-                    <h3>数据统计</h3>
-                    <p>自动统计总金额、发票数量等财务数据</p>
+                    <h3>结果预览</h3>
+                    <p>合并后实时预览PDF内容，确认无误再下载</p>
                 </div>
                 <div class="feature-card">
                     <h3>隐私保护</h3>
-                    <p>完全在本地浏览器进行，不上传服务器</p>
+                    <p>完全在本地浏览器处理，数据不上传服务器</p>
                 </div>
                 <div class="feature-card">
-                    <h3>导出Excel</h3>
-                    <p>支持导出数据，方便进一步处理</p>
+                    <h3>离线可用</h3>
+                    <p>下载源码后在浏览器打开，无需网络连接</p>
                 </div>
                 <div class="feature-card">
-                    <h3>一键打印</h3>
-                    <p>生成规范的A4双联打印格式，直接打印即可</p>
+                    <h3>跨平台</h3>
+                    <p>Windows、macOS、Linux 均可使用</p>
                 </div>
-            </div>
-
-            <h2 class="section-title" id="tutorial">使用说明</h2>
-            <div class="tips-box">
-                <h4>重要提示</h4>
-                <p><strong>发票识别说明：</strong>本工具使用PDF文本提取技术，识别成功率并非100%，请核对识别结果。如果发票是扫描件或图片格式的PDF，文本信息可能无法准确提取。建议使用电子发票原件（含可选中文字的PDF）以获得最佳识别效果。</p>
-                <p><strong>合并功能：</strong>即使无法识别发票信息，仍可正常合并PDF文件为A4双联格式，方便打印。</p>
-                <p><strong>内容缺失处理：</strong>某些特殊情况下发票内容可能会出现缺失，可尝试将PDF转换成扫描型PDF（即图片型PDF）后，再用本工具合并发票即可解决。</p>
-                <p><strong>离线使用：</strong>若想在无网络环境下使用，请在 <a href="https://github.com/a937750307/FaPiaoHeBing" target="_blank" style="color: #ff0000; text-decoration: none;">GitHub 仓库</a> 下载全部源码，打开 index.html 即可使用。</p>
-            </div>
-            
-            <div style="background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%); padding: 25px; border-radius: 15px; margin: 20px 0;">
-                <h3 style="margin-bottom: 15px;">功能特点</h3>
-                <ul style="line-height: 2;">
-                    <li>支持批量上传PDF发票文件</li>
-                    <li>自动提取发票号码和金额</li>
-                    <li>智能合并为A4双发票布局</li>
-                    <li>实时预览合并后的PDF文件</li>
-                </ul>
-                
-                <h3 style="margin-top: 25px; margin-bottom: 15px;">操作技巧</h3>
-                <ul style="line-height: 2;">
-                    <li>可直接拖拽文件到上传区域</li>
-                    <li>支持Ctrl/Shift多选文件</li>
-                    <li>合并后的PDF节约50%纸张</li>
-                    <li>CSV文件可导入Excel进行管理</li>
-                </ul>
-            </div>
-
-            <h2 class="section-title">上传发票</h2>
-            <div class="upload-area" id="uploadArea">
-                <div class="upload-icon"></div>
-                <h3>把发票文件拖进来这里</h3>
-                <p>或点击选择文件（支持多选）</p>
-                <p style="margin-top: 10px; font-size: 0.9em; color: #666;">支持批量上传多个PDF发票文件</p>
-                <input type="file" id="fileInput" accept=".pdf" multiple>
-            </div>
-
-            <div id="fileListContainer"></div>
-
-            <div id="statsPanel" style="display: none;">
-                <div class="stats-panel">
-                    <h3>统计信息</h3>
-                    <div class="stats-grid">
-                        <div class="stat-item">
-                            <div class="stat-value" id="fileCount">0</div>
-                            <div class="stat-label">发票数量</div>
-                        </div>
-                        <div class="stat-item">
-                            <div class="stat-value" id="totalAmount">¥0.00</div>
-                            <div class="stat-label">金额总计</div>
-                        </div>
-                        <div class="stat-item">
-                            <div class="stat-value" id="totalSize">0 MB</div>
-                            <div class="stat-label">文件大小</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="action-buttons">
-                <button class="btn" id="mergeBtn" disabled></i> 合并发票</button>
-                <button class="btn" id="printBtn" disabled></i> 生成打印文件</button>
-                <button class="btn" id="exportBtn" disabled></i> 导出Excel</button>
-                <button class="btn" id="clearBtn" disabled></i> 清空列表</button>
-            </div>
-
-            <div id="previewArea" style="display: none;">
-                <h2 class="section-title">发票预览</h2>
-                <div class="preview-area" id="previewContent"></div>
             </div>
         </div>
 
-        <footer class="footer">
-            <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #e8ecf1; text-align: center;">
-                <p style="font-size: 0.95em; color: #333; margin-bottom: 15px;">
-                    本站内容仅供学习和交流，禁止商业用途
-                </p>
-                <p style="font-size: 0.9em; color: #666; margin: 10px 0;">
-                    <a href="https://beian.miit.gov.cn/" target="_blank" style="color: #333; text-decoration: none; margin: 0 8px;">浙ICP备2025187466号</a>
-                    |
-                    <a href="https://www.beian.gov.cn/portal/registerSystemInfo?recordcode=33030402001483" target="_blank" style="color: #333; text-decoration: none; margin: 0 8px;">浙公网安备33030402001483号</a>
-                </p>
+        <!-- ===== 使用提示 ===== -->
+        <div class="tips-box">
+            <h4>使用说明</h4>
+            <p><strong>PDF 合并：</strong>上传多个 PDF、JPG、PNG 文件，工具会将它们合并为 A4 双联格式，每页并排两张，中间有虚线分割线，打印后沿虚线裁剪即可。</p>
+            <p><strong>PDF 分割：</strong>适用于高德地图行程单等场景，页面内容集中在上半部分、下半部分只有页码，上传后拖动滑块设置保留比例即可裁掉底部无用区域。</p>
+            <p><strong>离线使用：</strong>下载全部源码后在浏览器中打开 index.html 即可完全离线使用。</p>
+        </div>
+
+        <!-- ===== PDF 合并区 ===== -->
+        <div class="section" id="merge">
+            <h2 class="section-title">PDF 合并</h2>
+            <p class="section-desc">上传多个 PDF、JPG、PNG 文件，合并为 A4 双联打印格式，每页两张。</p>
+
+            <div class="card">
+                <!-- 上传区域 -->
+                <div class="upload-area" id="mergeUploadArea">
+                    <h3>把 PDF 文件拖进来</h3>
+                    <p>或点击选择文件（支持多选）</p>
+                    <input type="file" id="mergeFileInput" accept=".pdf,.jpg,.jpeg,.png" multiple class="hidden">
+                </div>
+
+                <!-- 文件列表 -->
+                <div id="mergeFileList" class="hidden">
+                    <div class="file-list" id="mergeFileItems"></div>
+                </div>
+
+                <!-- 操作按钮 -->
+                <div class="btn-group">
+                    <button class="btn btn-primary" id="mergeBtn" disabled>合并 PDF</button>
+                    <button class="btn btn-outline" id="downloadMergedBtn" disabled>下载合并结果</button>
+                    <button class="btn btn-danger" id="clearMergeBtn" disabled>清空列表</button>
+                </div>
+
+                <!-- 合并预览 (iframe) -->
+                <div id="mergePreviewPanel" class="hidden">
+                    <div class="pdf-preview-container">
+                        <div class="pdf-preview-header">
+                            <h4>合并结果预览</h4>
+                            <span class="page-info" id="mergePreviewInfo"></span>
+                        </div>
+                        <iframe id="mergePreviewFrame" class="pdf-preview-frame"></iframe>
+                    </div>
+                </div>
             </div>
+        </div>
+
+        <!-- ===== PDF分割区 ===== -->
+        <div class="section" id="split">
+            <h2 class="section-title">PDF 分割</h2>
+            <p class="section-desc">将PDF页面按比例分割，保留上半部分，裁掉下半部分。适用于高德地图行程单等A4页面，去除底部无用的页码区域。</p>
+
+            <div class="card">
+                <!-- 上传区域 -->
+                <div class="upload-area" id="splitUploadArea">
+                    <h3>把 PDF 文件拖进来</h3>
+                    <p>或点击选择文件</p>
+                    <input type="file" id="splitFileInput" accept=".pdf" class="hidden">
+                </div>
+
+                <!-- 文件信息 -->
+                <div id="splitFileInfo" class="hidden">
+                    <div class="file-item">
+                        <div class="file-info">
+                            <div class="file-name" id="splitFileName"></div>
+                            <div class="file-meta">
+                                <span>页数: <strong id="splitPageCount">0</strong></span>
+                                <span>大小: <strong id="splitFileSize">0</strong></span>
+                            </div>
+                        </div>
+                        <div class="file-actions">
+                            <button class="btn btn-danger btn-sm" onclick="SplitTool.clear()">移除</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 分割比例 -->
+                <div id="splitRatioPanel" class="hidden">
+                    <div class="ratio-control">
+                        <label>保留顶部</label>
+                        <input type="range" id="splitRatioSlider" min="10" max="90" value="50" step="1">
+                        <label>裁掉底部</label>
+                    </div>
+                    <div style="text-align:center; margin-top:8px; font-size:0.93em; color: var(--text-secondary);">
+                        保留比例: <span class="ratio-value" id="splitRatioDisplay">50%</span>
+                    </div>
+                    <div class="crop-legend">
+                        <p><span class="keep">保留区域</span> - 页面上半部分（内容区域）</p>
+                        <p><span class="remove">裁掉区域</span> - 页面下半部分（页码等无用区域）</p>
+                    </div>
+                </div>
+
+                <!-- 操作按钮 -->
+                <div class="btn-group" id="splitActions" class="hidden">
+                    <button class="btn btn-primary" id="splitBtn">分割 PDF</button>
+                    <button class="btn btn-outline" id="splitDownloadPngBtn" disabled>下载 PNG</button>
+                </div>
+
+                <!-- 分割预览 -->
+                <div id="splitPreviewPanel" class="hidden">
+                    <div class="split-preview-card" style="max-width:600px;margin:0 auto;">
+                        <h4>分割结果预览</h4>
+                        <div class="page-nav" style="display:flex;align-items:center;justify-content:center;gap:16px;margin-bottom:12px;">
+                            <button id="splitPrevPage" class="btn" style="padding:6px 16px;min-width:auto;">上一页</button>
+                            <span style="font-weight:600;min-width:100px;text-align:center;">
+                                第 <strong id="splitCurrentPage">1</strong> / <span id="splitTotalPages">1</span> 页
+                            </span>
+                            <button id="splitNextPage" class="btn" style="padding:6px 16px;min-width:auto;">下一页</button>
+                        </div>
+                        <canvas id="splitCanvas"></canvas>
+                    </div>
+                </div>
+
+                <!-- 分割完成提示 -->
+                <div id="splitResultInfo" class="hidden">
+                    <div class="tips-box success">
+                        <h4>分割完成</h4>
+                        <p>已成功分割PDF，共处理 <strong id="splitResultPages">0</strong> 页。点击"下载 PNG"保存文件。</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== 页脚 ===== -->
+        <footer class="footer">
+            <p>本站内容仅供学习和交流，禁止商业用途</p>
+            <p>
+                <a href="https://beian.miit.gov.cn/" target="_blank">浙ICP备2025187466号</a>
+                |
+                <a href="https://www.beian.gov.cn/portal/registerSystemInfo?recordcode=33030402001483" target="_blank"><img src="https://www.937788.xyz/gonganbeian.png" alt="" style="height:16px;vertical-align:middle;margin-right:2px;">浙公网安备33030402001483号</a>
+            </p>
         </footer>
     </div>
 
     <script src="pdf.min.js"></script>
     <script src="pdf-lib.min.js"></script>
-    <script src="xlsx.full.min.js"></script>
+    <script src="jszip.min.js"></script>
     <script>
-        // 初始化 PDF.js
         pdfjsLib.GlobalWorkerOptions.workerSrc = 'pdf.worker.min.js';
 
-        // 全局变量
-        let uploadedFiles = [];
-        let invoiceData = [];
-
-        // DOM 元素
-        const uploadArea = document.getElementById('uploadArea');
-        const fileInput = document.getElementById('fileInput');
-        const fileListContainer = document.getElementById('fileListContainer');
-        const statsPanel = document.getElementById('statsPanel');
-        const previewArea = document.getElementById('previewArea');
-        const previewContent = document.getElementById('previewContent');
-
-        // 按钮
-        const mergeBtn = document.getElementById('mergeBtn');
-        const printBtn = document.getElementById('printBtn');
-        const exportBtn = document.getElementById('exportBtn');
-        const clearBtn = document.getElementById('clearBtn');
-
-        // 统计元素
-        const fileCount = document.getElementById('fileCount');
-        const totalAmount = document.getElementById('totalAmount');
-        const totalTax = document.getElementById('totalTax');
-        const totalSize = document.getElementById('totalSize');
-
-        // 点击上传区域
-        uploadArea.addEventListener('click', () => {
-            fileInput.click();
-        });
-
-        // 文件选择
-        fileInput.addEventListener('change', (e) => {
-            handleFiles(e.target.files);
-        });
-
-        // 拖拽上传
-        uploadArea.addEventListener('dragover', (e) => {
-            e.preventDefault();
-            uploadArea.classList.add('dragover');
-        });
-
-        uploadArea.addEventListener('dragleave', () => {
-            uploadArea.classList.remove('dragover');
-        });
-
-        uploadArea.addEventListener('drop', (e) => {
-            e.preventDefault();
-            uploadArea.classList.remove('dragover');
-            handleFiles(e.dataTransfer.files);
-        });
-
-        // 处理文件
-        function handleFiles(files) {
-            const pdfFiles = Array.from(files).filter(file => file.type === 'application/pdf');
-            
-            if (pdfFiles.length === 0) {
-                showToast('请上传PDF格式的发票文件', 'error');
-                return;
-            }
-
-            pdfFiles.forEach(file => {
-                if (!uploadedFiles.find(f => f.name === file.name)) {
-                    uploadedFiles.push(file);
-                    processInvoice(file);
-                }
-            });
-
-            updateFileList();
-            updateStats();
-            enableButtons();
-            showToast(`成功添加 ${pdfFiles.length} 个文件`);
-        }
-
-        // 处理发票（真实提取信息）
-        async function processInvoice(file) {
-            try {
-                const arrayBuffer = await file.arrayBuffer();
-                const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
-                
-                // 提取PDF文本内容
-                let fullText = '';
-                for (let i = 1; i <= pdf.numPages; i++) {
-                    const page = await pdf.getPage(i);
-                    const textContent = await page.getTextContent();
-                    const pageText = textContent.items.map(item => item.str).join(' ');
-                    fullText += pageText + ' ';
-                }
-                
-                // 从文本中提取发票信息
-                const extractedData = extractInvoiceInfo(fullText);
-                
-                const invoice = {
-                    name: file.name,
-                    size: file.size,
-                    pages: pdf.numPages,
-                    amount: extractedData.amount,
-                    invoiceNo: extractedData.invoiceNo,
-                    date: extractedData.date,
-                    file: file,  // 存储原始文件而不是ArrayBuffer
-                    fullText: fullText
-                };
-
-                invoiceData.push(invoice);
-                updateStats();
-            } catch (error) {
-                console.error('处理发票出错:', error);
-                showToast('处理发票时出错: ' + error.message, 'error');
-            }
-        }
-
-        // 中文大写数字转阿拉伯数字
-        function chineseToNumber(chineseNum) {
-            const chineseMap = {
-                '零': 0, '壹': 1, '贰': 2, '叁': 3, '肆': 4,
-                '伍': 5, '陆': 6, '柒': 7, '捌': 8, '玖': 9,
-                '拾': 10, '佰': 100, '仟': 1000, '万': 10000, '亿': 100000000
-            };
-            
-            let result = 0;
-            let temp = 0;
-            let unit = 1;
-            
-            // 提取整数部分
-            const intMatch = chineseNum.match(/([零壹贰叁肆伍陆柒捌玖拾佰仟万亿]+)元/);
-            if (intMatch) {
-                const intPart = intMatch[1];
-                for (let i = intPart.length - 1; i >= 0; i--) {
-                    const char = intPart[i];
-                    const num = chineseMap[char];
-                    
-                    if (num >= 10) {
-                        if (num === 10 || num === 100 || num === 1000) {
-                            unit = num;
-                            if (temp === 0) temp = 1;
-                        } else if (num === 10000 || num === 100000000) {
-                            result = (result + temp) * num;
-                            temp = 0;
-                            unit = 1;
-                        }
-                    } else {
-                        temp += num * unit;
-                    }
-                }
-                result += temp;
-            }
-            
-            // 提取角分
-            const jiaoMatch = chineseNum.match(/([零壹贰叁肆伍陆柒捌玖])角/);
-            const fenMatch = chineseNum.match(/([零壹贰叁肆伍陆柒捌玖])分/);
-            
-            if (jiaoMatch) {
-                result += chineseMap[jiaoMatch[1]] * 0.1;
-            }
-            if (fenMatch) {
-                result += chineseMap[fenMatch[1]] * 0.01;
-            }
-            
-            return result;
-        }
-
-        // 从文本中提取发票信息
-        function extractInvoiceInfo(text) {
-            const result = {
-                invoiceNo: '',
-                amount: 0,
-                date: ''
-            };
-
-            // 清理文本（移除多余空格）
-            text = text.replace(/\s+/g, ' ');
-
-            // 提取发票号码（20位数字）
-            const noPatterns = [
-                /发票号码[:：\s]*(\d{20})/i,
-                /号码[:：\s]*(\d{20})/i,
-                /invoice\s*number[:：\s]*(\d{20})/i,
-                /NO\.?[:：\s]*(\d{20})/i,
-                /(\d{20})(?=\s|$)/
-            ];
-            
-            for (const pattern of noPatterns) {
-                const match = text.match(pattern);
-                if (match) {
-                    result.invoiceNo = match[1];
-                    break;
-                }
-            }
-
-            // 优先从大写金额提取总金额
-            const capitalAmountPatterns = [
-                /[（(]大写[)）][:：\s]*([零壹贰叁肆伍陆柒捌玖拾佰仟万亿]+元[零壹贰叁肆伍陆柒捌玖角分整]*)/i,
-                /价税合计[（(]大写[)）]?[:：\s]*([零壹贰叁肆伍陆柒捌玖拾佰仟万亿]+元[零壹贰叁肆伍陆柒捌玖角分整]*)/i,
-                /大写[:：\s]*([零壹贰叁肆伍陆柒捌玖拾佰仟万亿]+元[零壹贰叁肆伍陆柒捌玖角分整]*)/i
-            ];
-            
-            for (const pattern of capitalAmountPatterns) {
-                const match = text.match(pattern);
-                if (match) {
-                    const capitalAmount = match[1];
-                    const value = chineseToNumber(capitalAmount);
-                    if (!isNaN(value) && value > 0) {
-                        result.amount = value;
-                        break;
-                    }
-                }
-            }
-            
-            // 如果大写金额未识别，尝试从小写金额提取
-            if (result.amount === 0) {
-                // 查找所有¥符号，允许符号和数字之间有更多空白（最多10个字符）
-                const amountMatches = text.match(/[¥￥][\s\S]{0,10}?(\d+[\d,]*\.\d{2})/g);
-                
-                if (amountMatches && amountMatches.length > 0) {
-                    // 提取所有数值，找最大的
-                    const amounts = amountMatches.map(str => {
-                        const num = str.match(/(\d+[\d,]*\.\d{2})/);
-                        if (num) {
-                            return parseFloat(num[1].replace(/,/g, ''));
-                        }
-                        return 0;
-                    }).filter(n => n > 0);
-                    
-                    if (amounts.length > 0) {
-                        const maxAmount = Math.max(...amounts);
-                        if (!isNaN(maxAmount) && maxAmount > 0) {
-                            result.amount = maxAmount;
-                        }
-                    }
-                }
-            }
-
-            // 提取开票日期
-            const datePatterns = [
-                /开票日期[:：\s]*(\d{4})\s*年\s*(\d{1,2})\s*月\s*(\d{1,2})\s*日/i,
-                /日期[:：\s]*(\d{4})\s*年\s*(\d{1,2})\s*月\s*(\d{1,2})\s*日/i,
-                /(\d{4})\s*年\s*(\d{1,2})\s*月\s*(\d{1,2})\s*日/,
-                /(\d{4})[年\-\/](\d{1,2})[月\-\/](\d{1,2})[日]?/,
-                /date[:：\s]*(\d{4})[\/\-](\d{1,2})[\/\-](\d{1,2})/i
-            ];
-            
-            for (const pattern of datePatterns) {
-                const match = text.match(pattern);
-                if (match) {
-                    const year = match[1];
-                    const month = match[2].padStart(2, '0');
-                    const day = match[3].padStart(2, '0');
-                    result.date = `${year}-${month}-${day}`;
-                    break;
-                }
-            }
-
-            // 如果没有提取到日期，使用当前日期
-            if (!result.date) {
-                result.date = new Date().toLocaleDateString('zh-CN');
-            }
-
-            return result;
-        }
-
-        // 更新文件列表
-        function updateFileList() {
-            if (uploadedFiles.length === 0) {
-                fileListContainer.innerHTML = '<div class="empty-state"><div class="empty-icon"></div><p>还没有上传任何发票</p></div>';
-                return;
-            }
-
-            const html = `
-                <div class="file-list">
-                    <h3 class="section-title">已上传的发票 (${uploadedFiles.length})</h3>
-                    ${uploadedFiles.map((file, index) => `
-                        <div class="file-item">
-                            <div class="file-info">
-                                <div class="file-name">${file.name}</div>
-                                <div class="file-size">${formatFileSize(file.size)}</div>
-                            </div>
-                            <button class="delete-btn" onclick="removeFile(${index})">删除</button>
-                        </div>
-                    `).join('')}
-                </div>
-            `;
-            fileListContainer.innerHTML = html;
-        }
-
-        // 更新统计信息
-        function updateStats() {
-            if (invoiceData.length === 0) {
-                statsPanel.style.display = 'none';
-                return;
-            }
-
-            statsPanel.style.display = 'block';
-            
-            const totalAmountValue = invoiceData.reduce((sum, inv) => sum + inv.amount, 0);
-            const totalSizeValue = uploadedFiles.reduce((sum, file) => sum + file.size, 0);
-
-            fileCount.textContent = invoiceData.length;
-            totalAmount.textContent = `¥${totalAmountValue.toFixed(2)}`;
-            totalSize.textContent = formatFileSize(totalSizeValue);
-        }
-
-        // 删除文件
-        function removeFile(index) {
-            uploadedFiles.splice(index, 1);
-            invoiceData.splice(index, 1);
-            updateFileList();
-            updateStats();
-            
-            if (uploadedFiles.length === 0) {
-                disableButtons();
-            }
-            
-            showToast('已删除文件');
-        }
-
-        // 合并发票
-        mergeBtn.addEventListener('click', async () => {
-            if (uploadedFiles.length === 0) {
-                showToast('请先上传发票文件', 'error');
-                return;
-            }
-
-            showToast('正在合并发票（保留电子印章和文字），请稍候...');
-            mergeBtn.disabled = true;
-            
-            try {
-                // 使用 pdf-lib 合并 PDF，通过Canvas渲染保留所有元素包括电子印章
-                const { PDFDocument, rgb } = PDFLib;
-                const mergedPdf = await PDFDocument.create();
-                
-                // A4 纸张尺寸 (595.28 x 841.89 points)
-                const pageWidth = 595.28;
-                const pageHeight = 841.89;
-                const halfHeight = pageHeight / 2;
-                
-                for (let i = 0; i < invoiceData.length; i += 2) {
-                    const page = mergedPdf.addPage([pageWidth, pageHeight]);
-                    
-                    // 处理第一张发票 - 通过Canvas高质量渲染以保留电子印章和文字
-                    const firstBuffer = await invoiceData[i].file.arrayBuffer();
-                    const firstPdf = await pdfjsLib.getDocument({ data: firstBuffer }).promise;
-                    const firstPdfPage = await firstPdf.getPage(1);
-                    
-                    // 渲染第一张发票到Canvas - 更高的缩放因子以保留细节
-                    const firstCanvas = document.createElement('canvas');
-                    const firstScale = 3; // 提高到3倍高分辨率渲染
-                    const firstViewport = firstPdfPage.getViewport({ scale: firstScale });
-                    firstCanvas.width = firstViewport.width;
-                    firstCanvas.height = firstViewport.height;
-                    
-                    // 优化Canvas抗锯齿
-                    const firstCtx = firstCanvas.getContext('2d', { 
-                        willReadFrequently: true,
-                        alpha: true
-                    });
-                    firstCtx.fillStyle = 'white';
-                    firstCtx.fillRect(0, 0, firstCanvas.width, firstCanvas.height);
-                    firstCtx.imageSmoothingEnabled = true;
-                    firstCtx.imageSmoothingQuality = 'high';
-                    
-                    await firstPdfPage.render({
-                        canvasContext: firstCtx,
-                        viewport: firstViewport
-                    }).promise;
-                    
-                    // 将Canvas转换为高质量JPEG图像并嵌入PDF
-                    const firstImageData = firstCanvas.toDataURL('image/jpeg', 0.95); // 95%质量
-                    const firstImage = await mergedPdf.embedJpg(firstImageData);
-                    
-                    // 计算缩放比例
-                    const firstImageWidth = firstCanvas.width / firstScale;
-                    const firstImageHeight = firstCanvas.height / firstScale;
-                    const firstScale1 = Math.min(pageWidth / firstImageWidth, halfHeight / firstImageHeight);
-                    
-                    // 绘制第一张发票在上半部分
-                    page.drawImage(firstImage, {
-                        x: (pageWidth - firstImageWidth * firstScale1) / 2,
-                        y: halfHeight + (halfHeight - firstImageHeight * firstScale1) / 2,
-                        width: firstImageWidth * firstScale1,
-                        height: firstImageHeight * firstScale1
-                    });
-                    
-                    // 如果有第二张发票，处理并绘制在下半部分
-                    if (i + 1 < invoiceData.length) {
-                        const secondBuffer = await invoiceData[i + 1].file.arrayBuffer();
-                        const secondPdf = await pdfjsLib.getDocument({ data: secondBuffer }).promise;
-                        const secondPdfPage = await secondPdf.getPage(1);
-                        
-                        // 渲染第二张发票到Canvas - 更高的缩放因子
-                        const secondCanvas = document.createElement('canvas');
-                        const secondScale = 3; // 提高到3倍高分辨率渲染
-                        const secondViewport = secondPdfPage.getViewport({ scale: secondScale });
-                        secondCanvas.width = secondViewport.width;
-                        secondCanvas.height = secondViewport.height;
-                        
-                        // 优化Canvas抗锯齿
-                        const secondCtx = secondCanvas.getContext('2d', { 
-                            willReadFrequently: true,
-                            alpha: true
-                        });
-                        secondCtx.fillStyle = 'white';
-                        secondCtx.fillRect(0, 0, secondCanvas.width, secondCanvas.height);
-                        secondCtx.imageSmoothingEnabled = true;
-                        secondCtx.imageSmoothingQuality = 'high';
-                        
-                        await secondPdfPage.render({
-                            canvasContext: secondCtx,
-                            viewport: secondViewport
-                        }).promise;
-                        
-                        // 将Canvas转换为高质量JPEG图像并嵌入PDF
-                        const secondImageData = secondCanvas.toDataURL('image/jpeg', 0.95); // 95%质量
-                        const secondImage = await mergedPdf.embedJpg(secondImageData);
-                        
-                        // 计算缩放比例
-                        const secondImageWidth = secondCanvas.width / secondScale;
-                        const secondImageHeight = secondCanvas.height / secondScale;
-                        const secondScale2 = Math.min(pageWidth / secondImageWidth, halfHeight / secondImageHeight);
-                        
-                        // 绘制第二张发票在下半部分
-                        page.drawImage(secondImage, {
-                            x: (pageWidth - secondImageWidth * secondScale2) / 2,
-                            y: (halfHeight - secondImageHeight * secondScale2) / 2,
-                            width: secondImageWidth * secondScale2,
-                            height: secondImageHeight * secondScale2
-                        });
-                        
-                        // 绘制分割线
-                        page.drawLine({
-                            start: { x: 50, y: halfHeight },
-                            end: { x: pageWidth - 50, y: halfHeight },
-                            thickness: 1,
-                            color: rgb(0.5, 0.5, 0.5),
-                            dashArray: [5, 5]
-                        });
-                    }
-                }
-                
-                // 保存合并后的 PDF
-                const mergedPdfBytes = await mergedPdf.save();
-                window.mergedPdfData = mergedPdfBytes;
-                
-                generatePreview();
-                showToast('发票合并完成！');
-            } catch (error) {
-                console.error('合并失败:', error);
-                showToast('合并发票失败: ' + error.message, 'error');
-            } finally {
-                mergeBtn.disabled = false;
-            }
-        });
-
-        // 生成预览
-        function generatePreview() {
-            previewArea.style.display = 'block';
-            
-            const html = invoiceData.map((inv, index) => `
-                <div class="invoice-preview">
-                    <h4>发票 #${index + 1}</h4>
-                    <p><strong>文件名:</strong> ${inv.name}</p>
-                    <p><strong>发票号码:</strong> ${inv.invoiceNo || '没识别到'}</p>
-                    <p><strong>日期:</strong> ${inv.date}</p>
-                    <p><strong>总金额:</strong> ${inv.amount > 0 ? '¥' + inv.amount.toFixed(2) : '未识别'}</p>
-                </div>
-            `).join('');
-            
-            previewContent.innerHTML = html;
-            
-            // 滚动到预览区域
-            previewArea.scrollIntoView({ behavior: 'smooth' });
-        }
-
-        // 生成打印文件
-        printBtn.addEventListener('click', async () => {
-            if (!window.mergedPdfData) {
-                showToast('请先合并发票', 'error');
-                return;
-            }
-
-            showToast('正在下载合并的发票文件...');
-            
-            try {
-                // 创建下载链接
-                const blob = new Blob([window.mergedPdfData], { type: 'application/pdf' });
-                const url = URL.createObjectURL(blob);
-                const link = document.createElement('a');
-                link.href = url;
-                link.download = `电子发票合并_${new Date().getTime()}.pdf`;
-                link.click();
-                
-                // 清理
-                setTimeout(() => URL.revokeObjectURL(url), 100);
-                showToast('合并文件已下载！');
-            } catch (error) {
-                console.error('下载失败:', error);
-                showToast('下载失败: ' + error.message, 'error');
-            }
-        });
-
-        // 导出Excel
-        exportBtn.addEventListener('click', () => {
-            const data = invoiceData.map((inv, index) => ({
-                '序号': index + 1,
-                '文件名': inv.name,
-                '发票号码': inv.invoiceNo,
-                '日期': inv.date,
-                '总金额': inv.amount > 0 ? inv.amount.toFixed(2) : '未识别'
-            }));
-            
-            // 添加汇总行
-            const totalAmount = invoiceData.reduce((sum, inv) => sum + (inv.amount || 0), 0);
-            
-            data.push({
-                '序号': '',
-                '文件名': '总计',
-                '发票号码': '',
-                '日期': '',
-                '总金额': totalAmount.toFixed(2)
-            });
-            
-            const ws = XLSX.utils.json_to_sheet(data);
-            const wb = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(wb, ws, '发票明细');
-            
-            XLSX.writeFile(wb, `电子发票统计_${new Date().getTime()}.xlsx`);
-            showToast('Excel文件已导出！');
-        });
-
-        // 清空列表
-        clearBtn.addEventListener('click', () => {
-            if (confirm('确定要清空所有发票吗？')) {
-                uploadedFiles = [];
-                invoiceData = [];
-                window.mergedPdfData = null;
-                updateFileList();
-                updateStats();
-                disableButtons();
-                previewArea.style.display = 'none';
-                showToast('已清空所有发票');
-            }
-        });
-
-        // 启用按钮
-        function enableButtons() {
-            mergeBtn.disabled = false;
-            printBtn.disabled = false;
-            exportBtn.disabled = false;
-            clearBtn.disabled = false;
-        }
-
-        // 禁用按钮
-        function disableButtons() {
-            mergeBtn.disabled = true;
-            printBtn.disabled = true;
-            exportBtn.disabled = true;
-            clearBtn.disabled = true;
-        }
-
-        // 格式化文件大小
+        /* ===== 公共工具函数 ===== */
         function formatFileSize(bytes) {
-            if (bytes === 0) return '0 B';
+            if (!bytes || bytes === 0) return '0 B';
             const k = 1024;
             const sizes = ['B', 'KB', 'MB', 'GB'];
             const i = Math.floor(Math.log(bytes) / Math.log(k));
             return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
         }
 
-        // 显示提示
-        function showToast(message, type = 'success') {
+        function showToast(message, type) {
+            type = type || 'success';
             const toast = document.createElement('div');
-            toast.className = `toast ${type}`;
+            toast.className = 'toast' + (type === 'error' ? ' error' : '');
             toast.textContent = message;
             document.body.appendChild(toast);
-            
-            setTimeout(() => {
-                toast.remove();
-            }, 3000);
+            setTimeout(function () { toast.remove(); }, 3000);
         }
 
+        function $(id) { return document.getElementById(id); }
+
+        /* ===== 导航栏滚动效果 ===== */
+        const navbar = $('navbar');
+        window.addEventListener('scroll', function () {
+            if (window.scrollY > 10) {
+                navbar.classList.add('scrolled');
+            } else {
+                navbar.classList.remove('scrolled');
+            }
+
+            // 高亮当前区域导航
+            var sections = ['features', 'merge', 'split'];
+            var links = document.querySelectorAll('.nav-links a');
+            var current = '';
+            sections.forEach(function (id) {
+                var el = $(id);
+                if (el && window.scrollY >= el.offsetTop - 100) {
+                    current = id;
+                }
+            });
+            links.forEach(function (link) {
+                link.classList.remove('active');
+                if (link.getAttribute('href') === '#' + current) {
+                    link.classList.add('active');
+                }
+            });
+        });
+
+        // 平滑滚动
+        document.querySelectorAll('.nav-links a[href^="#"]').forEach(function (link) {
+            link.addEventListener('click', function (e) {
+                e.preventDefault();
+                var target = $(this.getAttribute('href').substring(1));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth' });
+                }
+            });
+        });
+
+        /* ===== PDF 合并工具 ===== */
+        var MergeTool = {
+            files: [],
+            mergedResult: null,
+
+            init: function () {
+                var self = this;
+                var uploadArea = $('mergeUploadArea');
+                var fileInput = $('mergeFileInput');
+
+                uploadArea.addEventListener('click', function () { fileInput.click(); });
+                fileInput.addEventListener('change', function (e) { self.addFiles(e.target.files); });
+
+                uploadArea.addEventListener('dragover', function (e) { e.preventDefault(); uploadArea.classList.add('dragover'); });
+                uploadArea.addEventListener('dragleave', function () { uploadArea.classList.remove('dragover'); });
+                uploadArea.addEventListener('drop', function (e) { e.preventDefault(); uploadArea.classList.remove('dragover'); self.addFiles(e.dataTransfer.files); });
+
+                $('mergeBtn').addEventListener('click', function () { self.merge(); });
+                $('downloadMergedBtn').addEventListener('click', function () { self.download(); });
+                $('clearMergeBtn').addEventListener('click', function () { self.clear(); });
+            },
+
+            addFiles: function (fileList) {
+                var self = this;
+                var supported = Array.from(fileList).filter(function (f) {
+                    return f.type === 'application/pdf' || f.type === 'image/jpeg' || f.type === 'image/png';
+                });
+                if (supported.length === 0) { showToast('请上传 PDF、JPG 或 PNG 格式的文件', 'error'); return; }
+
+                supported.forEach(function (file) {
+                    if (!self.files.find(function (f) { return f.name === file.name && f.size === file.size; })) {
+                        self.files.push(file);
+                    }
+                });
+
+                self.render();
+                showToast('已添加 ' + supported.length + ' 个文件');
+            },
+
+            removeFile: function (index) {
+                this.files.splice(index, 1);
+                this.mergedResult = null;
+                this.render();
+            },
+
+            render: function () {
+                var hasFiles = this.files.length > 0;
+
+                // 文件列表
+                if (hasFiles) {
+                    $('mergeFileItems').innerHTML = this.files.map(function (f, i) {
+                        return '<div class="file-item">' +
+                            '<div class="file-info">' +
+                                '<div class="file-name">' + f.name + '</div>' +
+                                '<div class="file-meta">' +
+                                    '<span>大小: ' + formatFileSize(f.size) + '</span>' +
+                                '</div>' +
+                            '</div>' +
+                            '<div class="file-actions">' +
+                                '<button class="btn btn-danger btn-sm" onclick="MergeTool.removeFile(' + i + ')">移除</button>' +
+                            '</div>' +
+                        '</div>';
+                    }).join('');
+                } else {
+                    $('mergeFileItems').innerHTML = '<div class="empty-state"><p>还没有上传任何文件</p></div>';
+                }
+
+                $('mergeFileList').classList.toggle('hidden', !hasFiles);
+
+                // 按钮状态
+                $('mergeBtn').disabled = !hasFiles;
+                $('downloadMergedBtn').disabled = !this.mergedResult;
+                $('clearMergeBtn').disabled = !hasFiles;
+
+                // 预览
+                if (!this.mergedResult) {
+                    $('mergePreviewPanel').classList.add('hidden');
+                }
+            },
+
+            merge: function () {
+                var self = this;
+                if (self.files.length === 0) { showToast('请先上传文件', 'error'); return; }
+
+                showToast('正在分析文件页数...');
+                $('mergeBtn').disabled = true;
+
+                var pageWidth = 595.28;
+                var pageHeight = 841.89;
+                var halfHeight = pageHeight / 2;
+
+                // 将单个页面（任意文件类型）渲染并嵌入目标 PDF
+                function renderPageEntry(entry, targetDoc) {
+                    if (entry.file.type === 'application/pdf') {
+                        return entry.file.arrayBuffer().then(function (buf) {
+                            return pdfjsLib.getDocument({ data: buf }).promise;
+                        }).then(function (pdf) {
+                            return pdf.getPage(entry.pageNum);
+                        }).then(function (page) {
+                            var canvas = document.createElement('canvas');
+                            var scale = 3;
+                            var viewport = page.getViewport({ scale: scale });
+                            canvas.width = viewport.width;
+                            canvas.height = viewport.height;
+                            var ctx = canvas.getContext('2d', { willReadFrequently: true });
+                            ctx.fillStyle = 'white';
+                            ctx.fillRect(0, 0, canvas.width, canvas.height);
+                            ctx.imageSmoothingEnabled = true;
+                            ctx.imageSmoothingQuality = 'high';
+                            return page.render({ canvasContext: ctx, viewport: viewport }).promise.then(function () {
+                                var dataUrl = canvas.toDataURL('image/jpeg', 0.95);
+                                return targetDoc.embedJpg(dataUrl).then(function (img) {
+                                    return { image: img, w: canvas.width / scale, h: canvas.height / scale };
+                                });
+                            });
+                        });
+                    } else {
+                        return new Promise(function (resolve, reject) {
+                            var img = new Image();
+                            img.onload = function () {
+                                var canvas = document.createElement('canvas');
+                                canvas.width = img.width;
+                                canvas.height = img.height;
+                                var ctx = canvas.getContext('2d');
+                                ctx.fillStyle = 'white';
+                                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                                ctx.drawImage(img, 0, 0);
+                                var dataUrl = canvas.toDataURL('image/jpeg', 0.95);
+                                targetDoc.embedJpg(dataUrl).then(function (embedded) {
+                                    resolve({ image: embedded, w: img.width, h: img.height });
+                                }).catch(reject);
+                            };
+                            img.onerror = reject;
+                            img.src = URL.createObjectURL(entry.file);
+                        });
+                    }
+                }
+
+                // 第一步：获取所有 PDF 文件的页数，摊平为页面列表
+                var expandPromises = self.files.map(function (file) {
+                    if (file.type === 'application/pdf') {
+                        return file.arrayBuffer().then(function (buf) {
+                            return pdfjsLib.getDocument({ data: buf }).promise;
+                        }).then(function (pdf) {
+                            var entries = [];
+                            for (var p = 1; p <= pdf.numPages; p++) {
+                                entries.push({ file: file, pageNum: p });
+                            }
+                            return entries;
+                        });
+                    } else {
+                        // 图片：单页
+                        return Promise.resolve([{ file: file, pageNum: 0 }]);
+                    }
+                });
+
+                Promise.all(expandPromises).then(function (filePageArrays) {
+                    // 摊平所有页面
+                    var allPages = [];
+                    filePageArrays.forEach(function (arr) {
+                        allPages = allPages.concat(arr);
+                    });
+
+                    var totalPages = allPages.length;
+                    showToast('正在合并 ' + totalPages + ' 页，请稍候...');
+
+                    // 第二步：创建目标 PDF，按每2页一组渲染
+                    return PDFLib.PDFDocument.create().then(function (mergedPdf) {
+                        var tasks = [];
+
+                        for (var i = 0; i < totalPages; i += 2) {
+                            (function (startIdx) {
+                                var topTask = renderPageEntry(allPages[startIdx], mergedPdf);
+                                var bottomTask = (startIdx + 1 < totalPages)
+                                    ? renderPageEntry(allPages[startIdx + 1], mergedPdf)
+                                    : Promise.resolve(null);
+
+                                tasks.push(Promise.all([topTask, bottomTask]).then(function (pair) {
+                                    return { top: pair[0], bottom: pair[1], index: startIdx };
+                                }));
+                            })(i);
+                        }
+
+                        return Promise.all(tasks).then(function (results) {
+                            results.sort(function (a, b) { return a.index - b.index; });
+
+                            for (var ri = 0; ri < results.length; ri++) {
+                                var r = results[ri];
+                                var page = mergedPdf.addPage([pageWidth, pageHeight]);
+
+                                // 上半部分
+                                var topScale = Math.min(pageWidth / r.top.w, halfHeight / r.top.h);
+                                page.drawImage(r.top.image, {
+                                    x: (pageWidth - r.top.w * topScale) / 2,
+                                    y: halfHeight + (halfHeight - r.top.h * topScale) / 2,
+                                    width: r.top.w * topScale,
+                                    height: r.top.h * topScale
+                                });
+
+                                // 下半部分
+                                if (r.bottom) {
+                                    var bottomScale = Math.min(pageWidth / r.bottom.w, halfHeight / r.bottom.h);
+                                    page.drawImage(r.bottom.image, {
+                                        x: (pageWidth - r.bottom.w * bottomScale) / 2,
+                                        y: (halfHeight - r.bottom.h * bottomScale) / 2,
+                                        width: r.bottom.w * bottomScale,
+                                        height: r.bottom.h * bottomScale
+                                    });
+
+                                    page.drawLine({
+                                        start: { x: 50, y: halfHeight },
+                                        end: { x: pageWidth - 50, y: halfHeight },
+                                        thickness: 1,
+                                        color: PDFLib.rgb(0.5, 0.5, 0.5),
+                                        dashArray: [5, 5]
+                                    });
+                                }
+                            }
+
+                            return mergedPdf.save().then(function (pdfBytes) {
+                                return { pdfBytes: pdfBytes, pageCount: Math.ceil(totalPages / 2), totalPages: totalPages };
+                            });
+                        });
+                    });
+                }).then(function (result) {
+                    self.mergedResult = result.pdfBytes;
+                    self.render();
+                    self.showPreview(result.pdfBytes, result.pageCount, result.totalPages);
+                    showToast('合并完成！共 ' + result.totalPages + ' 个原始页面，生成 ' + result.pageCount + ' 页 A4');
+                }).catch(function (err) {
+                    console.error('合并失败:', err);
+                    showToast('合并失败: ' + err.message, 'error');
+                }).finally(function () {
+                    $('mergeBtn').disabled = false;
+                });
+            },
+
+            showPreview: function (pdfBytes, pageCount, totalPages) {
+                var blob = new Blob([pdfBytes], { type: 'application/pdf' });
+                var url = URL.createObjectURL(blob);
+                var frame = $('mergePreviewFrame');
+                frame.src = url;
+                $('mergePreviewInfo').textContent = '共 ' + (pageCount || Math.ceil(this.files.length / 2)) + ' 页 A4' + (totalPages ? '（' + totalPages + ' 个原始页面）' : '');
+
+                $('mergePreviewPanel').classList.remove('hidden');
+                $('mergePreviewPanel').scrollIntoView({ behavior: 'smooth' });
+
+                if (frame._prevUrl) { URL.revokeObjectURL(frame._prevUrl); }
+                frame._prevUrl = url;
+            },
+
+            download: function () {
+                if (!this.mergedResult) { showToast('请先合并文件', 'error'); return; }
+                var blob = new Blob([this.mergedResult], { type: 'application/pdf' });
+                var url = URL.createObjectURL(blob);
+                var a = document.createElement('a');
+                a.href = url;
+                a.download = 'PDF合并_' + Date.now() + '.pdf';
+                a.click();
+                setTimeout(function () { URL.revokeObjectURL(url); }, 100);
+                showToast('合并文件已下载！');
+            },
+
+            clear: function () {
+                if (this.files.length > 0 && !confirm('确定要清空所有文件吗？')) return;
+                this.files = [];
+                this.mergedResult = null;
+                $('mergeFileInput').value = '';
+                var frame = $('mergePreviewFrame');
+                if (frame._prevUrl) { URL.revokeObjectURL(frame._prevUrl); frame._prevUrl = null; }
+                frame.src = '';
+                this.render();
+                showToast('已清空所有文件');
+            }
+        };
+
+        /* ===== PDF分割工具 ===== */
+        var SplitTool = {
+            file: null,
+            fileBuffer: null,
+            resultBuffer: null,
+
+            init: function () {
+                var self = this;
+                var uploadArea = $('splitUploadArea');
+                var fileInput = $('splitFileInput');
+
+                uploadArea.addEventListener('click', function () { fileInput.click(); });
+                fileInput.addEventListener('change', function (e) { self.loadFile(e.target.files[0]); });
+
+                uploadArea.addEventListener('dragover', function (e) { e.preventDefault(); uploadArea.classList.add('dragover'); });
+                uploadArea.addEventListener('dragleave', function () { uploadArea.classList.remove('dragover'); });
+                uploadArea.addEventListener('drop', function (e) { e.preventDefault(); uploadArea.classList.remove('dragover'); if (e.dataTransfer.files.length > 0) self.loadFile(e.dataTransfer.files[0]); });
+
+                $('splitRatioSlider').addEventListener('input', function () {
+                    var val = this.value;
+                    $('splitRatioDisplay').textContent = val + '%';
+                    // 如果已有分割结果，提示可重新分割
+                    if (self.resultBuffer) {
+                        $('splitResultInfo').classList.add('hidden');
+                        $('splitDownloadPngBtn').disabled = true;
+                    }
+                });
+                $('splitBtn').addEventListener('click', function () { self.split(); });
+                $('splitDownloadPngBtn').addEventListener('click', function () { self.downloadPng(); });
+                $('splitPrevPage').addEventListener('click', function () { self.prevPage(); });
+                $('splitNextPage').addEventListener('click', function () { self.nextPage(); });
+            },
+
+            loadFile: function (file) {
+                if (!file || file.type !== 'application/pdf') { showToast('请上传PDF格式的文件', 'error'); return; }
+                var self = this;
+                self.file = file;
+                self.resultBuffer = null;
+                self._previewPdf = null;
+                self._previewPageNum = 1;
+                file.arrayBuffer().then(function (buf) {
+                    // 保存副本供 pdf-lib 后续使用（pdf.js 会 detach 原始 buffer）
+                    self.fileBuffer = buf.slice(0);
+                    return pdfjsLib.getDocument({ data: buf }).promise;
+                }).then(function (pdf) {
+                    $('splitFileName').textContent = file.name;
+                    $('splitFileSize').textContent = formatFileSize(file.size);
+                    $('splitPageCount').textContent = pdf.numPages;
+                    self.render(true);
+                    showToast('已加载PDF文件，共 ' + pdf.numPages + ' 页');
+                });
+            },
+
+            split: function () {
+                var self = this;
+                if (!self.fileBuffer) { showToast('请先上传PDF文件', 'error'); return; }
+
+                var ratio = parseInt($('splitRatioSlider').value) / 100;
+                showToast('正在分割PDF，请稍候...');
+                $('splitBtn').disabled = true;
+
+                var cropCanvases = []; // 保存裁剪后的 Canvas 供 PNG 下载
+
+                PDFLib.PDFDocument.create().then(function (dstDoc) {
+                    return pdfjsLib.getDocument({ data: self.fileBuffer.slice(0) }).promise.then(function (srcPdf) {
+                        var pageCount = srcPdf.numPages;
+                        var tasks = [];
+                        for (var i = 1; i <= pageCount; i++) {
+                            (function (pageNum) {
+                                tasks.push(srcPdf.getPage(pageNum).then(function (page) {
+                                    var scale = 2;
+                                    var viewport = page.getViewport({ scale: scale });
+                                    var canvas = document.createElement('canvas');
+                                    canvas.width = viewport.width;
+                                    canvas.height = viewport.height;
+                                    var ctx = canvas.getContext('2d', { willReadFrequently: true });
+                                    ctx.fillStyle = 'white';
+                                    ctx.fillRect(0, 0, canvas.width, canvas.height);
+                                    ctx.imageSmoothingEnabled = true;
+                                    ctx.imageSmoothingQuality = 'high';
+                                    return page.render({ canvasContext: ctx, viewport: viewport }).promise.then(function () {
+                                        var cropHeight = Math.round(viewport.height * ratio);
+                                        var cropCanvas = document.createElement('canvas');
+                                        cropCanvas.width = viewport.width;
+                                        cropCanvas.height = cropHeight;
+                                        var cropCtx = cropCanvas.getContext('2d');
+                                        cropCtx.drawImage(canvas, 0, 0, viewport.width, cropHeight, 0, 0, viewport.width, cropHeight);
+                                        cropCanvases.push(cropCanvas);
+                                        // PNG 无损嵌入 PDF，质量最佳
+                                        var pngDataUrl = cropCanvas.toDataURL('image/png');
+                                        return dstDoc.embedPng(pngDataUrl).then(function (img) {
+                                            var imgW = cropCanvas.width / scale;
+                                            var imgH = cropCanvas.height / scale;
+                                            var newPage = dstDoc.addPage([imgW, imgH]);
+                                            newPage.drawImage(img, { x: 0, y: 0, width: imgW, height: imgH });
+                                        });
+                                    });
+                                }));
+                            })(i);
+                        }
+                        return Promise.all(tasks);
+                    }).then(function () {
+                        return dstDoc.save();
+                    });
+                }).then(function (pdfBytes) {
+                    self.resultBuffer = pdfBytes;
+                    self._cropCanvases = cropCanvases;
+                    self.render(true);
+                    self.generatePreview(ratio);
+                    showToast('PDF分割完成！');
+                }).catch(function (err) {
+                    console.error('分割失败:', err);
+                    showToast('PDF分割失败: ' + err.message, 'error');
+                }).finally(function () {
+                    $('splitBtn').disabled = false;
+                });
+            },
+
+            generatePreview: function (ratio) {
+                var self = this;
+                $('splitPreviewPanel').classList.remove('hidden');
+                self._previewPageNum = 1;
+                self._previewPdf = null;
+
+                // 计算总页数
+                pdfjsLib.getDocument({ data: self.fileBuffer }).promise.then(function (pdf) {
+                    var total = pdf.numPages;
+                    $('splitResultPages').textContent = total;
+                    $('splitTotalPages').textContent = total;
+                    $('splitCurrentPage').textContent = '1';
+                    $('splitPrevPage').disabled = true;
+                    $('splitNextPage').disabled = (total <= 1);
+                });
+
+                // 加载结果 PDF 并渲染第一页
+                pdfjsLib.getDocument({ data: self.resultBuffer }).promise.then(function (pdf) {
+                    self._previewPdf = pdf;
+                    self.renderPreviewPage(1);
+                });
+
+                $('splitPreviewPanel').scrollIntoView({ behavior: 'smooth' });
+            },
+
+            renderPreviewPage: function (pageNum) {
+                var self = this;
+                var pdf = self._previewPdf;
+                if (!pdf) return;
+                $('splitCurrentPage').textContent = pageNum;
+                $('splitPrevPage').disabled = (pageNum <= 1);
+                var total = parseInt($('splitTotalPages').textContent);
+                $('splitNextPage').disabled = (pageNum >= total);
+
+                pdf.getPage(pageNum).then(function (page) {
+                    var scale = 1.5;
+                    var viewport = page.getViewport({ scale: scale });
+                    var canvas = $('splitCanvas');
+                    canvas.width = viewport.width;
+                    canvas.height = viewport.height;
+                    var ctx = canvas.getContext('2d');
+                    ctx.fillStyle = 'white';
+                    ctx.fillRect(0, 0, canvas.width, canvas.height);
+                    return page.render({ canvasContext: ctx, viewport: viewport }).promise;
+                });
+            },
+
+            prevPage: function () {
+                if (this._previewPageNum > 1) {
+                    this._previewPageNum--;
+                    this.renderPreviewPage(this._previewPageNum);
+                }
+            },
+
+            nextPage: function () {
+                var total = parseInt($('splitTotalPages').textContent);
+                if (this._previewPageNum < total) {
+                    this._previewPageNum++;
+                    this.renderPreviewPage(this._previewPageNum);
+                }
+            },
+
+            downloadPng: function () {
+                if (!this._cropCanvases || this._cropCanvases.length === 0) {
+                    showToast('请先执行PDF分割', 'error'); return;
+                }
+                var canvases = this._cropCanvases;
+                var baseName = this.file ? this.file.name.replace(/\.\w+$/, '') : 'document';
+
+                if (canvases.length === 1) {
+                    // 单页直接下载 PNG
+                    canvases[0].toBlob(function (blob) {
+                        var url = URL.createObjectURL(blob);
+                        var a = document.createElement('a');
+                        a.href = url;
+                        a.download = baseName + '_分割.png';
+                        a.click();
+                        URL.revokeObjectURL(url);
+                        showToast('PNG 已下载（1 页）');
+                    }, 'image/png');
+                } else {
+                    // 多页打包 ZIP
+                    var zip = new JSZip();
+                    var promises = [];
+                    canvases.forEach(function (canvas, idx) {
+                        var p = new Promise(function (resolve, reject) {
+                            canvas.toBlob(function (blob) {
+                                zip.file(baseName + '_分割_' + (idx + 1) + '.png', blob);
+                                resolve();
+                            }, 'image/png');
+                        });
+                        promises.push(p);
+                    });
+                    Promise.all(promises).then(function () {
+                        return zip.generateAsync({ type: 'blob' });
+                    }).then(function (zipBlob) {
+                        var url = URL.createObjectURL(zipBlob);
+                        var a = document.createElement('a');
+                        a.href = url;
+                        a.download = baseName + '_分割.zip';
+                        a.click();
+                        URL.revokeObjectURL(url);
+                        showToast('ZIP 已下载（共 ' + canvases.length + ' 页）');
+                    }).catch(function (err) {
+                        showToast('ZIP 打包失败: ' + err.message, 'error');
+                    });
+                }
+            },
+
+            render: function (hasFile) {
+                hasFile = hasFile || false;
+                $('splitFileInfo').classList.toggle('hidden', !hasFile);
+                $('splitRatioPanel').classList.toggle('hidden', !hasFile);
+                $('splitActions').classList.toggle('hidden', !hasFile);
+                $('splitDownloadPngBtn').disabled = !this._cropCanvases || this._cropCanvases.length === 0;
+                $('splitResultInfo').classList.toggle('hidden', !this.resultBuffer);
+                if (!hasFile) {
+                    $('splitPreviewPanel').classList.add('hidden');
+                    $('splitResultInfo').classList.add('hidden');
+                }
+            },
+
+            clear: function () {
+                this.file = null;
+                this.fileBuffer = null;
+                this.resultBuffer = null;
+                this._cropCanvases = null;
+                this._previewPdf = null;
+                this._previewPageNum = 1;
+                $('splitFileInput').value = '';
+                $('splitRatioSlider').value = 50;
+                $('splitRatioDisplay').textContent = '50%';
+                this.render(false);
+                showToast('已移除文件');
+            }
+        };
+
         // 初始化
-        updateFileList();
+        MergeTool.init();
+        SplitTool.init();
+        SplitTool.render(false);
     </script>
 </body>
 </html>
